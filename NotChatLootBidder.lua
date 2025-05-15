@@ -41,26 +41,6 @@ local function IsTableEmpty(table)
   return next(table) == nil
 end
 
-local function GetRaidIndex(unitName)
-  if UnitInRaid("player") == 1 then
-     for i = 1, GetNumRaidMembers() do
-        if UnitName("raid"..i) == unitName then
-           return i
-        end
-     end
-  end
-  return 0
-end
-
-local function IsInRaid(unitName)
-  return GetRaidIndex(unitName) ~= 0
-end
-
-local function IsRaidAssistant(unitName)
-  _, rank = GetRaidRosterInfo(GetRaidIndex(unitName));
-  return rank ~= 0
-end
-
 local function Trim(str)
   local _start, _end, _match = string.find(str or "", '^%s*(.-)%s*$')
   return _match or ""
@@ -111,13 +91,12 @@ local function ShowHelp()
   Message("/bid [item-link] [item-link2]  - Open test bid frames")
   Message("/bid scale [50-150]  - Set the UI scale percentage")
   Message("/bid autoignore  - Toggle 'auto-ignore' mode to ignore items your class cannot use")
-  Message("/bid dkp - Check your current DKP from guild notes")
   Message("/bid message  - Set a default message (per character)")
   Message("/bid ignore  - List all ignored items")
   Message("/bid ignore clear  - Clear the ignore list completely")
   Message("/bid ignore [item-link] [item-link2]  - Toggle 'Ignore' for loot windows of these item(s)")
   Message("/bid clear  - Clear all bid frames")
-  Message("/bid info  - Show information about the add-on")
+	Message("/bid info  - Show information about the add-on")
 end
 
 local function ShowInfo()
@@ -138,7 +117,6 @@ local function ResetFrameStack()
     frame:SetPoint("TOP", NotChatLootBidder, "TOP", 0, frameHeight)
     frameHeight = frameHeight - 128
     frame:SetScale(NotChatLootBidder_Store.UIScale * UIParent:GetScale())
-	--frame:SetScale(NotChatLootBidder_Store.UIScale)
   end
 end
 
@@ -161,7 +139,7 @@ end
 local function CreateBidFrame(bidFrameId)
   local bidFrameName = "BidFrame" .. bidFrameId
   local frame = CreateFrame("Frame", bidFrameName, NotChatLootBidder, "BidFrameTemplate")
-  for _, t in {"MS", "OS", "TWINK", "ROLL"} do
+  for _, t in {"MS", "OS", "ROLL"} do
     local tier = t
     getglobal(bidFrameName .. tier .."Button"):SetScript("OnClick", function()
       local f = this:GetParent()
@@ -187,7 +165,7 @@ local function CreateBidFrame(bidFrameId)
       frame:Hide()
     end)
   end
-  --getglobal(bidFrameName .. "Alt"):SetChecked(NotChatLootBidder:GetAlt())
+  getglobal(bidFrameName .. "Alt"):SetChecked(NotChatLootBidder:GetAlt())
   frame:SetScript("OnHide", function()
     needFrames[bidFrameId] = nil
     frame:ClearAllPoints()
@@ -249,7 +227,7 @@ local function UseableItem(itemLinkInfo, itemSubType, itemName)
   return useable[myClass][itemSubType] == true
 end
 
-local function LoadBidFrame(item, masterLooter, minimumBid, MaxOsBid, MaxTwinkBid, mode)
+local function LoadBidFrame(item, masterLooter, minimumBid, mode)
   local _, _ , itemKey = string.find(item, "(item:%d+:%d+:%d+:%d+)")
   local itemName, itemLinkInfo, itemRarity, itemMinLevel, itemType, itemSubType, itemStackCount, itemEquipLoc, itemTexture = GetItemInfo(itemKey)
   if itemLinkInfo == nil then
@@ -267,26 +245,13 @@ local function LoadBidFrame(item, masterLooter, minimumBid, MaxOsBid, MaxTwinkBi
   frame.itemLink = item
   frame.itemLinkInfo = itemLinkInfo
   frame.masterLooter = masterLooter
-  frame.minimumBid = tonumber(minimumBid) or 1
+  frame.minimumBid = minimumBid or 1
   frame.mode = mode or "DKP"
   needFrames[bidFrameId] = frame
   getglobal(frame:GetName() .. "ItemIconItemName"):SetText(item)
   getglobal(frame:GetName() .. "ItemIcon"):SetNormalTexture(itemTexture or "Interface\\Icons\\Inv_misc_questionmark")
   getglobal(frame:GetName() .. "ItemIcon"):SetPushedTexture(itemTexture or "Interface\\Icons\\Inv_misc_questionmark")
   getglobal(frame:GetName() .. "Note"):SetText(NotChatLootBidder_Store.Messages[me] or "")
-  local playerDkp = NotChatLootBidder:GetPlayerDkpFromGuildNotes(me)
-  local maxOsBid = playerDkp and math.ceil(playerDkp * (MaxOsBid/100)) or 50
-  local maxTwinkBid = playerDkp and math.ceil(playerDkp * (MaxTwinkBid/100)) or 30
-
-  local dkpText = playerDkp and string.format(
-  "|cff00ff00DKP: %d|r | |cffff0000MAX OS: %d|r | |cff00ffffMAX TWINK: %d|r",
-	playerDkp, maxOsBid, maxTwinkBid
-  ) or "|cffff0000Не удалось получить DKP из гильдейских заметок|r"
-  Message(dkpText)
-  getglobal(frame:GetName() .. "DkpInfoText"):SetText(dkpText)
-  local minBidText = "Min. Bid: "..tostring(minimumBid)
-  Message(minBidText)
-  getglobal(frame:GetName() .. "MinimumBidText"):SetText(minBidText)
   local bidBox = getglobal(frame:GetName() .. "Bid")
   bidBox:SetText("")
   if frame.mode == "DKP" then
@@ -339,8 +304,7 @@ local function TogglePlacementFrame()
   if placementFrame:IsVisible() then
     placementFrame:Hide()
   else
-    --placementFrame:SetScale(NotChatLootBidder_Store.UIScale * UIParent:GetScale())
-	placementFrame:SetScale(NotChatLootBidder_Store.UIScale)
+    placementFrame:SetScale(NotChatLootBidder_Store.UIScale * UIParent:GetScale())
     placementFrame:Show()
   end
 end
@@ -371,13 +335,6 @@ local function InitSlashCommands()
 			ShowInfo()
     elseif commandlist[1] == "clear" then
       ClearFrames(.2)
-	elseif commandlist[1] == "dkp" then
-	  local playerDkp = NotChatLootBidder:GetPlayerDkpFromGuildNotes(me)
-	  local dkpText = playerDkp and string.format(
-	  "|cff00ff00DKP: %d|r",
-		playerDkp
-	  ) or "|cffff0000Не удалось получить DKP из гильдейских заметок|r"
-	  Message(dkpText)
     elseif commandlist[1] == "autoignore" then
       NotChatLootBidder_Store.AutoIgnore = not NotChatLootBidder_Store.AutoIgnore
       Message("Auto-ignore mode is " .. (NotChatLootBidder_Store.AutoIgnore and "enabled" or "disabled"))
@@ -422,29 +379,6 @@ function NotChatLootBidder:SetAlt(isAlt)
   Message("Setting \"alt\" flag " .. (isAlt and "on" or "off"))
 end
 
-function NotChatLootBidder:GetPlayerDkpFromGuildNotes(playerName)
-    local memberCount = GetNumGuildMembers()
-    for i = 1, memberCount do
-        local name, _, _, _, _, _, publicNote = GetGuildRosterInfo(i)
-        if name and NotChatLootBidder:CapitalizeStr(name) == NotChatLootBidder:CapitalizeStr(playerName) then
-            local _, _, dkp = string.find(publicNote or "", "<(-?%d+)>")
-            return tonumber(dkp) or 0
-        end
-    end
-    return nil
-end
-
-function NotChatLootBidder:CapitalizeStr(msg)
-	if not msg then
-		return ""
-	end	
-
-	local f = string.sub(msg, 1, 1)
-	local r = string.sub(msg, 2)
-	return string.upper(f) .. string.lower(r)
-end
-
-
 function NotChatLootBidder.ADDON_LOADED(loadedAddonName)
   if loadedAddonName == addonName then
     LoadVariables()
@@ -468,23 +402,9 @@ function NotChatLootBidder.CHAT_MSG_ADDON(addonTag, stringMessage, channel, send
     if incomingMessage["items"] then
       local minimumBid = incomingMessage["minimumBid"] -- optional: defaults to 1
       local mode = incomingMessage["mode"] -- defaults to "DKP"
-	  local MaxOsBid = incomingMessage["MaxOsBid"] or 50
-	  local MaxTwinkBid = incomingMessage['MaxTwinkBid'] or 30
       for _, i in GetItemLinks(string.gsub(incomingMessage["items"], "~~~", ",")) do
-        LoadBidFrame(i, sender, minimumBid, MaxOsBid, MaxTwinkBid, mode)
+        LoadBidFrame(i, sender, minimumBid, mode)
       end
-	elseif incomingMessage["checkDkp"] and IsRaidAssistant(sender) then
-	  local playerDkp = NotChatLootBidder:GetPlayerDkpFromGuildNotes(me)
-	  local maxOsBidPercent = tonumber(incomingMessage["MaxOsBid"])
-      local maxOsBid = playerDkp and math.ceil(playerDkp * (maxOsBidPercent/100)) or 50
-	  
-	  local maxTwinkBidPercent = tonumber(incomingMessage['MaxTwinkBid'])
-	  local maxTwinkBid = playerDkp and math.ceil(playerDkp * (maxTwinkBidPercent/100)) or 30
-	  local dkpText = playerDkp and string.format(
-	  "%s sent this: |cff00ff00Your DKP: %d|r | |cffff0000MAX OS (%d%%): %d|r | |cff00ffffMAX TWINK (%d%%): %d|r",
-		sender, playerDkp, maxOsBidPercent, maxOsBid, maxTwinkBidPercent, maxTwinkBid
-	  ) or "|cffff0000Не удалось получить DKP из гильдейских заметок|r"
-	  Message(dkpText)
     elseif incomingMessage["endSession"] then
       ClearFrames(2, sender)
     end
