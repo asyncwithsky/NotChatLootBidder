@@ -458,7 +458,7 @@
 		this:GetParent():ClearAllPoints()
 		this:GetParent():SetPoint(point, "UIParent", relativePoint, normalizedX, normalizedY)
 
-		print(string.format("Scale: %.2f | Raw: (%d, %d) | Normalized: (%d, %d)", 
+		-- print(string.format("Scale: %.2f | Raw: (%d, %d) | Normalized: (%d, %d)", 
 		scale, xOfs, yOfs, normalizedX, normalizedY))
 	  </OnDragStop>
       <OnMouseUp>
