@@ -5,7 +5,7 @@
   <GameTooltip name="BidFrameInfoTooltip" inherits="GameTooltipTemplate" parent="UIParent" hidden="true"/>
   <Frame name="BidFrameTemplate" virtual="true" enableMouse="true" hidden="true">
     <Size>
-      <AbsDimension x="412" y="128"/>
+      <AbsDimension x="452" y="128"/>
     </Size>
     <Anchors>
       <Anchor point="TOP">
@@ -26,6 +26,36 @@
         <AbsValue val="32"/>
       </EdgeSize>
     </Backdrop>
+	<Layers>
+		<Layer level="OVERLAY">
+		<FontString name="$parentDkpInfoText" inherits="GameFontNormal" text="" justifyH="LEFT">
+		  <Anchors>
+			<Anchor point="TOPLEFT">
+			  <Offset>
+				<AbsDimension x="24" y="-12"/>
+			  </Offset>
+			</Anchor>
+		  </Anchors>
+		  <FontHeight>
+			<AbsValue val="36"/>
+		  </FontHeight>
+		</FontString>
+		</Layer>
+		<Layer level="OVERLAY">
+		<FontString name="$parentMinimumBidText" inherits="GameFontNormal" text="" justifyH="LEFT">
+		  <Anchors>
+			<Anchor point="TOPLEFT">
+			  <Offset>
+				<AbsDimension x="75" y="-58"/>
+			  </Offset>
+			</Anchor>
+		  </Anchors>
+		  <FontHeight>
+			<AbsValue val="24"/>
+		  </FontHeight>
+		</FontString>
+		</Layer>
+	</Layers>
     <Frames>
 			<EditBox name="$parentBid" inherits="InputBoxTemplate" numeric="true" letters="5" autofocus="false">
 				<Layers>
@@ -42,7 +72,7 @@
 					</Layer>
 				</Layers>
 				<Size>
-					<AbsDimension x="24" y="32" />
+					<AbsDimension x="32" y="32" />
 				</Size>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
@@ -53,6 +83,7 @@
 				</Anchors>>
 			</EditBox>
 			<EditBox name="$parentNote" inherits="InputBoxTemplate" letters="120" autofocus="false" text="'/bid' to show/hide this frame">
+
 				<Layers>
 					<Layer level="BACKGROUND">
 						<FontString inherits="GameFontNormalSmall" text="Note:" justifyH="RIGHT">
@@ -77,7 +108,7 @@
 					</Anchor>
 				</Anchors>>
 			</EditBox>
-      <CheckButton name="$parentAlt" inherits="OptionsCheckButtonTemplate">
+<!--       <CheckButton name="$parentAlt" inherits="OptionsCheckButtonTemplate">
 				<Layers>
 					<Layer level="BACKGROUND">
 						<FontString inherits="GameFontNormalSmall" text="Alt:" justifyH="RIGHT">
@@ -103,7 +134,7 @@
             NotChatLootBidder_Frame:SetAlt(this:GetChecked() == 1)
           </OnClick>
         </Scripts>
-      </CheckButton>
+      </CheckButton> -->
       <Button name="$parentItemIcon" inherits="UIPanelButtonTemplate" text="">
         <NormalTexture name="$parentNormalTexture" file="Interface\Icons\inv_staff_08">
           <Size>
@@ -153,6 +184,7 @@
           </Anchor>
         </Anchors>
         <Layers>
+		
           <Layer level="OVERLAY">
             <FontString name="$parentItemName" inherits="GameFontNormal" text="&gt;Drag Me for Placement&lt;" hidden="false" justifyH="LEFT">
               <Anchors>
@@ -168,6 +200,7 @@
             </FontString>
           </Layer>
         </Layers>
+
         <Scripts>
           <OnEnter>
             if this:GetParent().itemLinkInfo then
@@ -280,6 +313,56 @@
           </Layer>
         </Layers>
       </Button>
+	  <Button name="$parentTWINKButton" hidden="false" inherits="UIPanelButtonTemplate" text="">
+        <NormalTexture file="Interface\Addons\NotChatLootBidder\images\twink_icon">
+          <Size x="64" y="64"/>
+          <Anchors>
+            <Anchor point="TOPLEFT">
+              <Offset x="0" y="0"/>
+            </Anchor>
+          </Anchors>
+        </NormalTexture>
+        <PushedTexture file="Interface\Addons\NotChatLootBidder\images\twink_icon_highlight">
+          <Size x="64" y="64"/>
+          <Anchors>
+            <Anchor point="TOPLEFT">
+              <Offset x="0" y="0"/>
+            </Anchor>
+          </Anchors>
+        </PushedTexture>
+        <HighlightTexture file="Interface\Addons\NotChatLootBidder\images\twink_icon_highlight">
+          <Size x="64" y="64"/>
+          <Anchors>
+            <Anchor point="TOPLEFT">
+              <Offset x="0" y="0"/>
+            </Anchor>
+          </Anchors>
+        </HighlightTexture>
+        <DisabledTexture inherits=""/>
+        <Size>
+          <AbsDimension x="36" y="36"/>
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT">
+            <Offset>
+              <AbsDimension x="342" y="-40"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Layers>
+          <Layer level="OVERLAY">
+            <FontString name="$parentName" inherits="GameFontNormal" text="TWINK" hidden="false">
+              <Anchors>
+                <Anchor point="BOTTOM">
+                  <Offset>
+                    <AbsDimension x="0" y="-18"/>
+                  </Offset>
+                </Anchor>
+              </Anchors>
+            </FontString>
+          </Layer>
+        </Layers>
+      </Button>
       <Button name="$parentROLLButton" hidden="false" inherits="UIPanelButtonTemplate" text="">
         <NormalTexture file="Interface\Buttons\UI-GroupLoot-Dice-Highlight">
           <Size x="36" y="36"/>
@@ -312,7 +395,7 @@
         <Anchors>
           <Anchor point="TOPLEFT">
             <Offset>
-              <AbsDimension x="342" y="-40"/>
+              <AbsDimension x="379" y="-40"/>
             </Offset>
           </Anchor>
         </Anchors>
@@ -342,8 +425,8 @@
     </Frames>
   </Frame>
   <Frame name="NotChatLootBidder_Frame" hidden="false" toplevel="true" parent="UIParent" movable="true" enableMouse="true">
-  <Size><AbsDimension x="412" y="20"/></Size>
-  <Anchors><Anchor point="TOP"><Offset><AbsDimension x="0" y="-64"/></Offset></Anchor></Anchors>
+  <Size><AbsDimension x="452" y="20"/></Size>
+  <Anchors><Anchor point="TOP"><Offset><AbsDimension x="0" y="0"/></Offset></Anchor></Anchors>
   <Frames>
     <Frame name="$parentPlacement" inherits="BidFrameTemplate" hidden="true">
     <Scripts>
@@ -364,12 +447,20 @@
           this:StartMoving()
         end
       </OnDragStart>
-      <OnDragStop>
-        this:StopMovingOrSizing()
-        this:GetParent():ClearAllPoints()
-        local point, _, relativePoint, xOfs, yOfs = this:GetPoint()
-        this:GetParent():SetPoint(point, "UIParent", relativePoint, xOfs, yOfs)
-      </OnDragStop>
+	  <OnDragStop>
+		this:StopMovingOrSizing()
+		local scale = this:GetScale()
+
+		local point, _, relativePoint, xOfs, yOfs = this:GetPoint()
+
+		local normalizedX = xOfs * scale
+		local normalizedY = yOfs * scale
+		this:GetParent():ClearAllPoints()
+		this:GetParent():SetPoint(point, "UIParent", relativePoint, normalizedX, normalizedY)
+
+		print(string.format("Scale: %.2f | Raw: (%d, %d) | Normalized: (%d, %d)", 
+		scale, xOfs, yOfs, normalizedX, normalizedY))
+	  </OnDragStop>
       <OnMouseUp>
         if arg1 == "LeftButton" and this:IsVisible() then
           this:StopMovingOrSizing()
