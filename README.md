@@ -1,3 +1,4 @@
+# ATTENTION! THIS IS MOD FOR THE GUILD "CuHuu TpakTop". USE AT YOUR OWN RISK! (IF YOU WANT PURE VERSION OF NotChatLootBidder CHECK [MAIN REPO](https://github.com/trumpetx/NotChatLootBidder))
 This addon allows the pop-up of loot frames which interact with the [ChatLootBidder](https://github.com/trumpetx/ChatLootBidder)  Master Looter addon.
 
 ![image](https://github.com/user-attachments/assets/c1b1f63a-045a-42a9-a511-3d23ff80fdb8)
